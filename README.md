@@ -1,0 +1,2 @@
+# tablo
+Lumpurini: tablo prodazhiv
