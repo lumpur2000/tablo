@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lumpurini · Табло продажів</title>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><script src="./data.js"></script><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{margin:0}a{color:oklch(0.48 0.17 275)}a:hover{color:oklch(0.38 0.17 275)}</style></helmet>
+<div style="font-family:'Onest',system-ui,sans-serif;background:#f5f6fa;color:#1f2233;min-height:100%;padding:0 0 48px;font-size:14px;line-height:1.35;font-variant-numeric:tabular-nums">
+  <div style="background:#fff;border-bottom:1px solid #e4e6ef;padding:14px 32px 0">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-weight:700;font-size:18px;letter-spacing:-0.01em">Lumpurini</div>
+        <div style="color:#6b6f80">Табло продажів</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+        
+        <div style="display:flex;gap:2px;background:#eef0f6;border-radius:10px;padding:3px">
+          <sc-for list="{{ currencies }}" as="c" hint-placeholder-count="2">
+            <button onClick="{{ c.pick }}" style="border:0;border-radius:8px;padding:7px 14px;font:600 13px 'Onest',sans-serif;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};box-shadow:{{ c.shadow }}">{{ c.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:14px">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+        <div onClick="{{ t.pick }}" style="padding:10px 14px;cursor:pointer;font-weight:{{ t.weight }};color:{{ t.fg }};border-bottom:2px solid {{ t.line }};display:flex;gap:8px;align-items:center">{{ t.label }}<sc-if value="{{ t.note }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:400;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:1px 6px">ще не підключено</span></sc-if></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <sc-if value="{{ tabSources }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:20px 32px 0;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between">
+    <div style="font-size:15px"><span style="font-weight:600">{{ periodCur }}</span><span style="color:#6b6f80">, порівняння з {{ periodPrev }}</span></div>
+    <div style="color:#6b6f80;font-size:13px">{{ updatedText }}</div>
+  </div>
+
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:24px 28px;display:flex;flex-wrap:wrap;gap:28px 40px">
+    <div style="flex:0 1 270px;min-width:230px;display:flex;flex-direction:column;gap:6px">
+      <div style="color:#6b6f80;font-size:13px">Продажі з початку місяця</div>
+      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <div style="font-size:44px;font-weight:700;letter-spacing:-0.02em;line-height:1.05">{{ total.cur }}</div>
+        <div style="color:#8a8ea0;font-size:12px">без ПДВ</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <span style="background:{{ total.deltaBg }};color:{{ total.deltaFg }};font-weight:600;border-radius:8px;padding:3px 9px">{{ total.delta }}</span>
+        <span style="color:#6b6f80">минулого місяця було {{ total.prev }} <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></span>
+      </div>
+      <div style="margin-top:14px;color:#1f2233">{{ total.orders }} замовлень <span style="color:#6b6f80">· було {{ total.prevOrders }}</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:18px;font-size:12.5px;color:#4a4e60">
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:3px;background:oklch(0.48 0.17 275)"></span>{{ periodCur }}</div>
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:3px;box-sizing:border-box;border:2px dashed oklch(0.70 0.10 275);background:#fff"></span>{{ periodPrev }}</div>
+      </div>
+    </div>
+
+    <div style="flex:1 1 480px;min-width:0;display:flex;flex-wrap:wrap;gap:28px 44px">
+      <div style="flex:1 1 320px;min-width:0">
+        <div style="font-weight:600;margin-bottom:14px">Канали з початку місяця <span style="font-weight:400;color:#8a8ea0;font-size:12px">без ПДВ</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ c.rows }}" as="ch" hint-placeholder-count="2">
+            <div style="display:grid;grid-template-columns:96px minmax(0,1fr) 64px;gap:12px;align-items:center">
+              <div style="font-weight:500">{{ ch.name }}</div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;align-items:center;gap:8px"><div style="height:14px;width:{{ ch.curW }};min-width:4px;flex:none;background:{{ ch.curBg }};border-radius:0 4px 4px 0"></div><div style="font-weight:700;font-size:13px;white-space:nowrap">{{ ch.cur }}</div></div>
+                <div style="display:flex;align-items:center;gap:8px"><div style="height:10px;width:{{ ch.prevW }};min-width:4px;flex:none;box-sizing:border-box;border:1.5px dashed oklch(0.70 0.10 275);border-left:0;background:#fff;border-radius:0 4px 4px 0"></div><div style="font-size:12px;color:#6b6f80;white-space:nowrap">{{ ch.prev }}</div></div>
+              </div>
+              <div style="text-align:right"><span style="background:{{ ch.deltaBg }};color:{{ ch.deltaFg }};font-weight:600;border-radius:8px;padding:3px 9px;white-space:nowrap">{{ ch.delta }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ noSales }}" hint-placeholder-val="{{ false }}"><div style="margin-top:18px;font-size:12.5px;color:#8a8ea0">Ще без продажів: {{ noSales }}</div></sc-if>
+      </div>
+      <div style="flex:1 1 300px;min-width:0">
+        <div style="font-weight:600;margin-bottom:14px">Місяць по відрізках <span style="font-weight:400;color:#8a8ea0;font-size:12px">без ПДВ</span></div>
+        <div style="display:flex;gap:10px;align-items:flex-end;border-bottom:1px solid #d5d8e3;height:170px">
+          <sc-for list="{{ b.weeks }}" as="w" hint-placeholder-count="3">
+            <div style="flex:1;display:flex;justify-content:center;align-items:flex-end;gap:5px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:46px"><div style="font-weight:700;font-size:12px;white-space:nowrap">{{ w.cur }}</div><div style="width:100%;height:{{ w.curH }};background:oklch(0.48 0.17 275);border-radius:5px 5px 0 0"></div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:46px"><div style="font-size:12px;color:#6b6f80;white-space:nowrap">{{ w.prev }}</div><div style="width:100%;height:{{ w.prevH }};box-sizing:border-box;border:2px dashed oklch(0.70 0.10 275);border-bottom:0;background:#fff;border-radius:5px 5px 0 0"></div></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:10px;padding-top:8px">
+          <sc-for list="{{ b.weeks }}" as="w" hint-placeholder-count="3">
+            <div style="flex:1;text-align:center;font-size:12.5px;color:#4a4e60;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-weight:600">{{ w.label }}</div><span style="background:{{ w.deltaBg }};color:{{ w.deltaFg }};font-weight:600;border-radius:6px;padding:1px 6px">{{ w.delta }}</span><div style="font-size:11.5px;color:oklch(0.42 0.10 70);font-weight:600">{{ w.note }}</div></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;overflow-x:auto">
+    <div style="min-width:940px">
+      <div style="display:grid;grid-template-columns:minmax(200px,1fr) 170px 170px 170px 150px 110px;gap:16px;padding:12px 24px;border-bottom:1px solid #e4e6ef;color:#6b6f80;font-size:12.5px;align-items:end">
+        <div>Тип продажів</div><div style="text-align:right">Платно <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div><div style="text-align:right">Безплатно <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div><div style="text-align:right">Разом <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div><div style="text-align:right">{{ prevMonth }} <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div><div style="text-align:right">Зміна</div>
+      </div>
+      <sc-for list="{{ mRows }}" as="m" hint-placeholder-count="5">
+        <div style="display:grid;grid-template-columns:minmax(200px,1fr) 170px 170px 170px 150px 110px;gap:16px;padding:14px 24px;border-bottom:1px solid #eef0f6;align-items:center;background:{{ m.bg }};font-weight:{{ m.weight }}">
+          <div style="font-size:15px">{{ m.name }}</div>
+          <sc-for list="{{ m.cells }}" as="c" hint-placeholder-count="4">
+            <div style="text-align:right;font-size:{{ c.size }};font-weight:{{ c.weight }};color:{{ c.fg }}">
+              <sc-if value="{{ c.nd }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></sc-if>
+              <sc-if value="{{ c.val }}" hint-placeholder-val="{{ true }}">{{ c.text }} <span style="font-size:12px;color:#8a8ea0;font-weight:400">{{ c.share }}</span></sc-if>
+            </div>
+          </sc-for>
+          <div style="text-align:right"><span style="background:{{ m.deltaBg }};color:{{ m.deltaFg }};font-weight:600;border-radius:8px;padding:3px 9px;white-space:nowrap">{{ m.delta }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="margin:28px 32px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="font-weight:600;font-size:16px">Усі джерела</div>
+    <div style="display:flex;gap:2px;background:#e9ebf3;border-radius:10px;padding:3px">
+      <sc-for list="{{ views }}" as="s" hint-placeholder-count="2">
+        <button onClick="{{ s.pick }}" style="border:0;border-radius:8px;padding:7px 14px;font:500 13px 'Onest',sans-serif;cursor:pointer;background:{{ s.bg }};color:{{ s.fg }};box-shadow:{{ s.shadow }}">{{ s.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;overflow-x:auto">
+    <div style="min-width:1040px">
+      <div style="display:grid;grid-template-columns:minmax(280px,1fr) 150px 210px 110px 150px 110px;gap:16px;padding:12px 24px;border-bottom:1px solid #e4e6ef;color:#6b6f80;font-size:12.5px;align-items:end">
+        <div>Джерело</div>
+        <div style="text-align:right">Продажі <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div>
+        <div>
+          <div>По відрізках</div>
+          <div style="display:flex;gap:8px;font-size:10.5px;color:#8a8ea0;margin-top:2px"><sc-for list="{{ segLabels }}" as="sl" hint-placeholder-count="3"><span style="width:34px;display:flex;justify-content:center;white-space:nowrap">{{ sl }}</span></sc-for></div>
+        </div>
+        <div style="text-align:right">Замовлення</div>
+        <div style="text-align:right">{{ prevMonth }} <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div>
+        <div style="text-align:right">Зміна</div>
+      </div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="12">
+        <div onClick="{{ r.toggle }}" style="display:grid;grid-template-columns:minmax(280px,1fr) 150px 210px 110px 150px 110px;gap:16px;padding:{{ r.padY }} 24px;border-bottom:1px solid #eef0f6;align-items:center;background:{{ r.bg }};cursor:{{ r.cursor }};font-size:{{ r.fontSize }}">
+          <div style="display:flex;align-items:center;gap:8px;padding-left:{{ r.indent }};min-width:0">
+            <span style="width:14px;flex:none;color:#8a8ea0;font-size:10px;display:inline-block;transform:{{ r.chevRot }};opacity:{{ r.chevOpacity }}">▶</span>
+            <span style="font-weight:{{ r.weight }};color:{{ r.nameColor }};white-space:nowrap">{{ r.name }}</span>
+            <sc-if value="{{ r.tag }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;border-radius:6px;padding:1px 7px;background:{{ r.tagBg }};color:{{ r.tagFg }};border:{{ r.tagBorder }}">{{ r.tag }}</span></sc-if>
+            <sc-if value="{{ r.tag2 }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#6b6f80;white-space:nowrap">{{ r.tag2 }}</span></sc-if>
+            <sc-if value="{{ r.share }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#6b6f80;white-space:nowrap">{{ r.share }}</span></sc-if>
+          </div>
+          <div style="text-align:right;font-weight:{{ r.weight }}">
+            <sc-if value="{{ r.isZero }}" hint-placeholder-val="{{ false }}"><span style="background:oklch(0.52 0.19 25);color:#fff;font-weight:700;border-radius:8px;padding:3px 10px">{{ r.cur }}</span></sc-if>
+            <sc-if value="{{ r.notZero }}" hint-placeholder-val="{{ true }}">{{ r.cur }}</sc-if>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;height:26px">
+            <sc-for list="{{ r.weeks }}" as="w" hint-placeholder-count="3">
+              <div title="{{ w.title }}" style="display:flex;gap:2px;align-items:flex-end;justify-content:center;width:34px;height:26px">
+                <div style="width:10px;height:{{ w.curH }};background:{{ w.curBg }};border-radius:2px 2px 0 0"></div>
+                <div style="width:10px;height:{{ w.prevH }};box-sizing:border-box;border:{{ w.prevBorder }};border-bottom:0;background:#fff;border-radius:2px 2px 0 0"></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="text-align:right">{{ r.orders }} <span style="color:#8a8ea0;font-size:12px">{{ r.prevOrders }}</span></div>
+          <div style="text-align:right;color:#4a4e60">
+            <sc-if value="{{ r.hasPrev }}" hint-placeholder-val="{{ true }}">{{ r.prev }}</sc-if>
+            <sc-if value="{{ r.noPrev }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px">немає даних</span></sc-if>
+          </div>
+          <div style="text-align:right"><span style="background:{{ r.deltaBg }};color:{{ r.deltaFg }};font-weight:600;border-radius:8px;padding:3px 9px;white-space:nowrap">{{ r.delta }}</span></div>
+        </div>
+      </sc-for>
+      <div style="display:grid;grid-template-columns:minmax(280px,1fr) 150px 210px 110px 150px 110px;gap:16px;padding:14px 24px;align-items:center;font-weight:700;background:#fafbfd">
+        <div style="padding-left:22px">Разом</div>
+        <div style="text-align:right">{{ total.cur }}</div>
+        <div></div>
+        <div style="text-align:right">{{ total.orders }}</div>
+        <div style="text-align:right;font-weight:500;color:#4a4e60">{{ total.prev }}</div>
+        <div style="text-align:right"><span style="background:{{ total.deltaBg }};color:{{ total.deltaFg }};border-radius:8px;padding:3px 9px">{{ total.delta }}</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin:12px 32px 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:12.5px;color:#6b6f80;align-items:center">
+    <div style="display:flex;gap:6px;align-items:center"><span style="background:oklch(0.52 0.19 25);color:#fff;font-weight:700;border-radius:6px;padding:1px 7px">0</span>продажі були й зникли: перевірити джерело</div>
+    <div style="display:flex;gap:6px;align-items:center"><span style="border:1px dashed #c5c8d6;border-radius:6px;padding:1px 7px;color:#8a8ea0">немає даних</span>джерело тоді ще не було підключене</div>
+    <div>{{ segNote }}</div>
+    <div>Сайт: джерело покупця оновлюється раз на тиждень, останні дні тимчасово в «не визначено», нулі за ці дні червоним не позначаються</div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ tabProducts }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px 32px 0;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between">
+    <div style="font-size:15px"><span style="font-weight:600">{{ periodCur }}</span><span style="color:#6b6f80">, порівняння з {{ periodPrev }}</span></div>
+    <div style="color:#6b6f80;font-size:13px">{{ updatedText }}</div>
+  </div>
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;overflow-x:auto">
+    <div style="min-width:{{ pMinW }}">
+      <div style="display:grid;grid-template-columns:{{ pGrid }};gap:12px;padding:12px 24px;border-bottom:1px solid #e4e6ef;font-size:12.5px;align-items:end">
+        <sc-for list="{{ pCols }}" as="col" hint-placeholder-count="11">
+          <div onClick="{{ col.sort }}" style="text-align:{{ col.align }};cursor:pointer;color:{{ col.fg }};font-weight:{{ col.weight }};user-select:none">{{ col.label }} <span style="font-size:10px">{{ col.arrow }}</span><div style="font-size:11px;color:#8a8ea0;font-weight:400;min-height:14px">{{ col.sub }}</div></div>
+        </sc-for>
+      </div>
+      <sc-for list="{{ pRows }}" as="p" hint-placeholder-count="12">
+        <div style="display:grid;grid-template-columns:{{ pGrid }};gap:12px;padding:{{ padY }} 24px;border-bottom:1px solid #eef0f6;align-items:center;background:{{ p.bg }}">
+          <div style="min-width:0"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div><div style="font-size:11.5px;color:#8a8ea0">{{ p.code }}</div></div>
+          <div style="text-align:right">{{ p.units }} <span style="color:#8a8ea0;font-size:12px">· {{ p.prevUnits }}</span></div>
+          <div style="text-align:right;font-weight:600">
+            <sc-if value="{{ p.isZero }}" hint-placeholder-val="{{ false }}"><span style="background:oklch(0.52 0.19 25);color:#fff;font-weight:700;border-radius:8px;padding:3px 10px">{{ p.sum }}</span></sc-if>
+            <sc-if value="{{ p.notZero }}" hint-placeholder-val="{{ true }}">{{ p.sum }}</sc-if>
+          </div>
+          <sc-for list="{{ p.ch }}" as="c" hint-placeholder-count="6">
+            <div title="{{ c.title }}" style="text-align:right;color:{{ c.fg }};font-weight:{{ c.weight }}">{{ c.text }}</div>
+          </sc-for>
+          <div style="text-align:right;color:#4a4e60">{{ p.prev }}</div>
+          <div style="text-align:right"><span style="background:{{ p.deltaBg }};color:{{ p.deltaFg }};font-weight:600;border-radius:8px;padding:3px 9px;white-space:nowrap">{{ p.delta }}</span></div>
+        </div>
+      </sc-for>
+      <div style="display:grid;grid-template-columns:{{ pGrid }};gap:12px;padding:14px 24px;align-items:center;font-weight:700;background:#fafbfd">
+        <div>Разом</div>
+        <div style="text-align:right">{{ pTotal.units }} <span style="color:#8a8ea0;font-size:12px;font-weight:400">· {{ pTotal.prevUnits }}</span></div>
+        <div style="text-align:right">{{ pTotal.sum }}</div>
+        <sc-for list="{{ pTotal.ch }}" as="c" hint-placeholder-count="6"><div style="text-align:right">{{ c }}</div></sc-for>
+        <div style="text-align:right;font-weight:500;color:#4a4e60">{{ pTotal.prev }}</div>
+        <div style="text-align:right"><span style="background:{{ pTotal.deltaBg }};color:{{ pTotal.deltaFg }};font-weight:600;border-radius:8px;padding:3px 9px;white-space:nowrap">{{ pTotal.delta }}</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin:12px 32px 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:12.5px;color:#6b6f80;align-items:center">
+    <div>У стовпцях каналів: продано штук. Натисніть на заголовок стовпця, щоб відсортувати.</div>
+    <div style="display:flex;gap:6px;align-items:center"><span style="color:oklch(0.52 0.19 25);font-weight:700">0</span>минулого місяця продажі були, зараз немає</div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ tabPrices }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px 32px 0;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between">
+    <div style="font-size:15px"><span style="font-weight:600">{{ periodCur }}</span><span style="color:#6b6f80"> · середня фактична ціна продажу і темп</span></div>
+    <div style="color:#6b6f80;font-size:13px">{{ updatedText }}</div>
+  </div>
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;overflow-x:auto">
+    <div style="min-width:{{ prMinW }}">
+      <div style="display:grid;grid-template-columns:{{ prGrid }};gap:16px;padding:12px 24px;border-bottom:1px solid #e4e6ef;font-size:12.5px;color:#6b6f80;align-items:end">
+        <div>Товар</div>
+        <sc-for list="{{ prCols }}" as="col" hint-placeholder-count="6"><div style="text-align:right">{{ col }}<div style="font-size:11px;color:#8a8ea0">ціна з ПДВ · шт/тиждень</div></div></sc-for>
+      </div>
+      <sc-for list="{{ prRows }}" as="p" hint-placeholder-count="12">
+        <div style="display:grid;grid-template-columns:{{ prGrid }};gap:16px;padding:{{ padY }} 24px;border-bottom:1px solid #eef0f6;align-items:center">
+          <div style="min-width:0"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div><div style="font-size:11.5px;color:#8a8ea0">{{ p.code }}</div></div>
+          <sc-for list="{{ p.ch }}" as="c" hint-placeholder-count="6">
+            <div style="text-align:right"><span style="font-weight:600">{{ c.price }}</span><div style="font-size:12px;color:#8a8ea0">{{ c.pace }}</div></div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="margin:12px 32px 0;font-size:12.5px;color:#6b6f80">Середня фактична ціна: сума продажів з ПДВ, поділена на кількість проданих штук на цьому каналі. Темп: штук на тиждень за {{ periodCur }}.</div>
+  </sc-if>
+  <sc-if value="{{ tabAds }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px 32px 0;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between">
+    <div style="font-size:15px"><span style="font-weight:600">Останні 4 тижні разом</span><span style="color:#6b6f80"> · {{ adPeriod }}, тижні з понеділка по неділю</span></div>
+    <div style="color:#6b6f80;font-size:13px">{{ adFile }}</div>
+  </div>
+  <div style="margin:16px 32px 0;background:oklch(0.95 0.06 85);border:1px solid oklch(0.80 0.11 85);border-radius:12px;padding:14px 20px;font-size:15px;font-weight:600;color:oklch(0.32 0.07 70);display:flex;gap:12px;align-items:center">
+    <span style="flex:none;width:22px;height:22px;border-radius:50%;background:oklch(0.32 0.07 70);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px">!</span>
+    <span>Останній тиждень неповний: продажі від реклами доганяють один-два тижні</span>
+  </div>
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:24px 28px;display:flex;flex-wrap:wrap;gap:28px 40px">
+    <div style="flex:0 1 270px;min-width:230px;display:flex;flex-direction:column;gap:16px">
+      <div><div style="color:#6b6f80;font-size:13px">Витрати на рекламу</div><div style="display:flex;align-items:baseline;gap:8px"><div style="font-size:34px;font-weight:700;letter-spacing:-0.02em">{{ adTotal.spend }}</div><div style="color:#8a8ea0;font-size:12px">без ПДВ</div></div></div>
+      <div><div style="color:#6b6f80;font-size:13px">Продажі від реклами</div><div style="display:flex;align-items:baseline;gap:8px"><div style="font-size:34px;font-weight:700;letter-spacing:-0.02em">{{ adTotal.sales }}</div><div style="color:#8a8ea0;font-size:12px">без ПДВ</div></div></div>
+      <div><div style="color:#6b6f80;font-size:13px">Частка витрат у продажах</div><div style="font-size:24px;font-weight:700">{{ adTotal.share }}</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:auto;font-size:12.5px;color:#4a4e60">
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:3px;background:oklch(0.48 0.17 275)"></span>продажі від реклами</div>
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:14px;border-radius:2px;background:#1f2233;margin:0 3px"></span>витрати на рекламу</div>
+      </div>
+    </div>
+    <div style="flex:1 1 480px;min-width:0">
+      <div style="font-weight:600;margin-bottom:14px">Динаміка по тижнях <span style="font-weight:400;color:#8a8ea0;font-size:12px">без ПДВ</span></div>
+      <div style="display:flex;gap:16px;align-items:flex-end;border-bottom:1px solid #d5d8e3;height:226px;padding:0 8px">
+        <sc-for list="{{ adWeeks }}" as="w" hint-placeholder-count="4">
+          <div style="flex:1;display:flex;justify-content:center;align-items:flex-end;gap:8px;opacity:{{ w.op }}">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:64px"><div style="font-weight:700;font-size:13px;white-space:nowrap">{{ w.sales }}</div><div style="width:100%;height:{{ w.salesH }};background:oklch(0.48 0.17 275);border-radius:6px 6px 0 0"></div></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:36px"><div style="font-size:12px;color:#4a4e60;white-space:nowrap">{{ w.spend }}</div><div style="width:22px;height:{{ w.spendH }};background:#1f2233;border-radius:4px 4px 0 0"></div></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:16px;padding:8px 8px 0">
+        <sc-for list="{{ adWeeks }}" as="w" hint-placeholder-count="4"><div style="flex:1;text-align:center;font-size:12.5px;color:#4a4e60">{{ w.label }}<div style="font-size:11.5px;font-weight:600;color:oklch(0.42 0.10 70);min-height:15px">{{ w.note }}</div></div></sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;overflow-x:auto">
+    <div style="min-width:900px">
+      <div style="display:grid;grid-template-columns:minmax(240px,1fr) 140px 150px 120px 110px 160px;gap:16px;padding:12px 24px;border-bottom:1px solid #e4e6ef;color:#6b6f80;font-size:12.5px;align-items:end">
+        <div>Рекламне джерело</div>
+        <div style="text-align:right">Витрати <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div>
+        <div style="text-align:right">Продажі <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div>
+        <div style="text-align:right">Частка витрат</div>
+        <div style="text-align:right">Замовлення</div>
+        <div>По тижнях<div style="font-size:10.5px;color:#8a8ea0;margin-top:2px">4 тижні, останній неповний</div></div>
+      </div>
+      <sc-for list="{{ adRows }}" as="r" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:minmax(240px,1fr) 140px 150px 120px 110px 160px;gap:16px;padding:{{ padY }} 24px;border-bottom:1px solid #eef0f6;align-items:center">
+          <div style="font-weight:500">{{ r.name }}</div>
+          <div style="text-align:right">{{ r.spend }}</div>
+          <div style="text-align:right;font-weight:600">{{ r.sales }}</div>
+          <div style="text-align:right">{{ r.share }}</div>
+          <div style="text-align:right">{{ r.orders }}</div>
+          <div style="display:flex;gap:10px;align-items:flex-end;height:26px">
+            <sc-for list="{{ r.weeks }}" as="w" hint-placeholder-count="4">
+              <div title="{{ w.title }}" style="display:flex;gap:2px;align-items:flex-end;height:26px;opacity:{{ w.op }}"><div style="width:12px;height:{{ w.salesH }};background:oklch(0.48 0.17 275);border-radius:2px 2px 0 0"></div><div style="width:6px;height:{{ w.spendH }};background:#1f2233;border-radius:2px 2px 0 0"></div></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display:grid;grid-template-columns:minmax(240px,1fr) 140px 150px 120px 110px 160px;gap:16px;padding:14px 24px;align-items:center;font-weight:700;background:#fafbfd">
+        <div>Разом</div><div style="text-align:right">{{ adTotal.spend }}</div><div style="text-align:right">{{ adTotal.sales }}</div><div style="text-align:right">{{ adTotal.share }}</div><div style="text-align:right">{{ adTotal.orders }}</div><div></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin:12px 32px 0;font-size:12.5px;color:#6b6f80">Частка витрат: витрати на рекламу, поділені на продажі від цієї реклами. Що менше, то краще.</div>
+  </sc-if>
+  <sc-if value="{{ tabProfit }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:20px 32px 0;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between">
+    <div style="font-size:15px"><span style="font-weight:600">{{ periodCur }}</span><span style="color:#6b6f80">, порівняння з {{ periodPrev }}</span></div>
+    <div style="color:#6b6f80;font-size:13px">Блок ще не підключено</div>
+  </div>
+  <div style="margin:16px 32px 0;border:1px dashed #c5c8d6;border-radius:12px;padding:16px 20px;color:#4a4e60;background:#fafbfd"><span style="font-weight:600;color:#1f2233">Прибуток ще не підключено.</span> Тут буде: продажі мінус собівартість, подарунки окремим рядком зі знаком мінус. Дані з'являться, коли в базі буде собівартість товарів.</div>
+  <div style="margin:16px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;overflow-x:auto">
+    <div style="min-width:760px">
+      <div style="display:grid;grid-template-columns:minmax(260px,1fr) 160px 160px 110px;gap:16px;padding:12px 24px;border-bottom:1px solid #e4e6ef;color:#6b6f80;font-size:12.5px">
+        <div>Рядок</div><div style="text-align:right">{{ curMonth }} <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div><div style="text-align:right">{{ prevMonth }} <span style="font-size:11px;color:#8a8ea0">без ПДВ</span></div><div style="text-align:right">Зміна</div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(260px,1fr) 160px 160px 110px;gap:16px;padding:14px 24px;border-bottom:1px solid #eef0f6;align-items:center;">
+        <div>Продажі</div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(260px,1fr) 160px 160px 110px;gap:16px;padding:14px 24px;border-bottom:1px solid #eef0f6;align-items:center;">
+        <div>− Собівартість проданих товарів</div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(260px,1fr) 160px 160px 110px;gap:16px;padding:14px 24px;border-bottom:1px solid #eef0f6;align-items:center;">
+        <div>− Подарунки <span style="font-size:12px;color:#8a8ea0;font-weight:400">собівартість подарованого</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(260px,1fr) 160px 160px 110px;gap:16px;padding:14px 24px;border-bottom:1px solid #eef0f6;align-items:center;font-weight:700;background:#fafbfd">
+        <div>= Прибуток</div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div><div style="text-align:right"><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:2px 7px;font-weight:400">немає даних</span></div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ tabHelp }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:24px 32px 0;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px;font-size:16px;line-height:1.55;display:flex;flex-direction:column;gap:10px;max-width:920px">
+    <div style="font-weight:700;font-size:20px">Як ми ділимо продажі</div>
+    <div><span style="font-weight:700">На попиті:</span> людина сама шукала товар, а ми її перехопили.</div>
+    <div><span style="font-weight:700">Брендові:</span> ми самі показали товар людині й створили попит. Тому TikTok Shop брендовий: там продає ролик, а не пошук.</div>
+    <div><span style="font-weight:700">Lumpurini Family:</span> продажі, які принесли активності Family.</div>
+  </div>
+  <div style="margin:16px 32px 0;display:flex;flex-wrap:wrap;gap:16px">
+    <div style="flex:1 1 280px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;font-size:16px;margin-bottom:12px">Брендові продажі</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648"><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Реклама Meta і TikTok на сайт</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Переходи з наших профілів Instagram, Facebook, TikTok без реклами</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>TikTok Shop: реклама, блогери, наш ролик без реклами</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Instagram Direct</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>TikTok Direct</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Прямий захід на сайт</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Чуже посилання на сайт</span></div></div></div>
+    <div style="flex:1 1 280px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;font-size:16px;margin-bottom:12px">Продажі на попиті</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648"><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Allegro</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Amazon</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Пошук на сайт: Google-реклама і звичайний пошук</span></div><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>AI-помічники на сайт: реклама в ChatGPT і переходи без реклами</span></div></div></div>
+    <div style="flex:1 1 280px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;font-size:16px;margin-bottom:12px">Lumpurini Family</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648"><div style="display:flex;gap:10px"><span style="flex:none;width:5px;height:5px;border-radius:50%;background:#8a8ea0;margin-top:8px"></span><span>Усе, що принесли активності Family: листи, месенджери</span></div></div></div>
+  </div>
+  <div style="margin:16px 32px 0;display:flex;flex-wrap:wrap;gap:16px">
+    <div style="flex:1 1 380px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;margin-bottom:8px">«Платно» і «безплатно»</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648;line-height:1.5"><div><span style="font-size:11px;border-radius:6px;padding:1px 7px;background:#1f2233;color:#fff">платно</span> продаж прийшов з реклами або від блогерів, за яких ми платимо.</div><div><span style="font-size:11px;border-radius:6px;padding:1px 7px;border:1px solid #c5c8d6;color:#4a4e60">безплатно</span> продаж прийшов без оплати за показ чи перехід.</div></div></div>
+    <div style="flex:1 1 380px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;margin-bottom:8px">«Не визначено»</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648;line-height:1.5"><div>Продажі сайту, для яких джерело покупця ще не відоме. Джерело покупця оновлюється раз на тиждень, тому продажі останніх днів тимчасово потрапляють сюди. Рядок показує свою частку.</div></div></div>
+    <div style="flex:1 1 380px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;margin-bottom:8px">«0» і «немає даних»</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648;line-height:1.5"><div><span style="background:oklch(0.52 0.19 25);color:#fff;font-weight:700;border-radius:6px;padding:1px 8px">0</span> раніше продажі були, тепер їх немає. Це сигнал перевірити джерело.</div><div><span style="font-size:12px;color:#8a8ea0;border:1px dashed #c5c8d6;border-radius:6px;padding:1px 7px">немає даних</span> джерело тоді ще не було підключене. Порівнювати нема з чим, тому в стовпці «Зміна» порожньо.</div></div></div>
+    <div style="flex:1 1 380px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;margin-bottom:8px">Як читати порівняння з минулим місяцем</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648;line-height:1.5"><div>Табло показує місяць наростаючим підсумком: з 1-го числа по вчорашній день. Поруч ті самі дні минулого місяця.</div><div style="display:flex;align-items:center;gap:8px"><span style="flex:none;width:14px;height:14px;border-radius:3px;background:oklch(0.48 0.17 275)"></span>суцільна смужка: цей місяць</div><div style="display:flex;align-items:center;gap:8px"><span style="flex:none;width:14px;height:14px;border-radius:3px;box-sizing:border-box;border:2px dashed oklch(0.70 0.10 275)"></span>контурна смужка: минулий місяць</div><div>Відрізки по сім днів від 1-го числа: 1–7, 8–14, 15–21, 22–28, 29 – кінець місяця. Останній відрізок може бути неповним, тоді поруч написано, скільки в ньому днів.</div><div>Екран «Реклама» рахує інакше: календарні тижні з понеділка по неділю.</div></div></div>
+    <div style="flex:1 1 380px;background:#fff;border:1px solid #e4e6ef;border-radius:14px;padding:22px 26px"><div style="font-weight:700;margin-bottom:8px">Гроші</div><div style="display:flex;flex-direction:column;gap:8px;color:#333648;line-height:1.5"><div>Продажі показані без ПДВ, ціна товару з ПДВ. Валюту перемикає кнопка вгорі: zł або €.</div></div></div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;просторо&quot;,&quot;компактно&quot;],&quot;default&quot;:&quot;просторо&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;defaultCurrency&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;PLN&quot;,&quot;EUR&quot;],&quot;default&quot;:&quot;PLN&quot;,&quot;tsType&quot;:&quot;'PLN'|'EUR'&quot;}}">
+class Component extends DCLogic {
+  state = { cur: null, view: 'chan', tab: 'sources', sortKey: 'sum', sortDir: -1, open: { 'Allegro': true, 'Сайт': true, brand: true, demand: true, family: true, undef: true } };
+  componentDidMount() { if (!window.LUMPURINI_DATA) this._t = setInterval(() => { if (window.LUMPURINI_DATA) { clearInterval(this._t); this.forceUpdate(); } }, 100); }
+  componentWillUnmount() { clearInterval(this._t); }
+  renderVals() {
+    // Усі цифри беруться з window.LUMPURINI_DATA (файл data.js)
+    const D = window.LUMPURINI_DATA; if (!D) return {};
+    const A = 'oklch(0.48 0.17 275)', AL = 'oklch(0.70 0.10 275)', RED = 'oklch(0.52 0.19 25)';
+    const cur = this.state.cur || (this.props.defaultCurrency ?? 'PLN'), k = cur === 'EUR' ? 'eur' : 'pln', unit = cur === 'EUR' ? '€' : 'zł';
+    const money = v => Math.round(v).toLocaleString('uk-UA') + '\u00a0' + unit;
+    const sum = a => a.reduce((s, v) => s + v, 0), dec = (v, n) => v.toFixed(n).replace('.', ','), pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '';
+    const delta = (c, p) => {
+      const g = { bg: 'oklch(0.95 0.04 155)', fg: 'oklch(0.40 0.11 155)' }, r = { bg: 'oklch(0.95 0.03 25)', fg: 'oklch(0.45 0.17 25)' }, n = { bg: '#eef0f6', fg: '#4a4e60' };
+      if (!p) return Object.assign({ label: '\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0' }, n);
+      const d = Math.round((c - p) / p * 100);
+      return Object.assign({ label: (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d) + '%' }, d >= 3 ? g : d <= -3 ? r : n);
+    };
+    const MG = ['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'], MN = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'], WD = ['нд','пн','вт','ср','чт','пт','сб'];
+    const pd = s => { const a = s.slice(0, 10).split('-').map(Number); return { y: a[0], m: a[1], d: a[2], t: s.slice(11, 16) }; };
+    const range = (a, b) => (a.d === b.d ? a.d : a.d + '–' + b.d) + ' ' + MG[b.m - 1];
+    const fullDate = x => WD[new Date(x.y, x.m - 1, x.d).getDay()] + ', ' + x.d + ' ' + MG[x.m - 1] + ' ' + x.y;
+    const cf = pd(D.meta.current.from), ct = pd(D.meta.current.to), pf = pd(D.meta.previous.from), pt = pd(D.meta.previous.to), up = pd(D.meta.updatedAt);
+    const dn = n => n === 1 ? 'день' : n < 5 ? 'дні' : 'днів';
+    const segs = D.meta.segments.map(s => { const label = s.fromDay === s.toDay ? '' + s.fromDay : s.fromDay + '–' + s.toDay, note = s.complete ? '' : 'неповний, ' + s.days + ' ' + dn(s.days);
+      return { label, note, long: label + ' ' + MG[ct.m - 1] + (note ? ' (' + note + ')' : '') }; });
+    const lastSeg = D.meta.segments[D.meta.segments.length - 1], SI = segs.map((_, i) => i);
+    const compact = (this.props.density ?? 'просторо') === 'компактно', view = this.state.view, tab = this.state.tab;
+
+    // ---- Джерела: дерево канал → країна → джерело
+    const leaf = (r, name) => ({ name, t: r.type, p: r.paid, undef: r.type == null, cw: r.current.map(s => s.net[k]), pw: r.previous ? r.previous.map(s => s.net[k]) : null, co: sum(r.current.map(s => s.orders)), po: r.previous ? sum(r.previous.map(s => s.orders)) : null });
+    const group = (rs, key) => { const m = new Map(); rs.forEach(r => { const v = r[key] || ''; if (!m.has(v)) m.set(v, []); m.get(v).push(r); }); return [...m]; };
+    const agg = n => { if (!n.kids) return n; const ks = n.kids.map(agg), hp = ks.some(x => x.pw);
+      n.cw = SI.map(i => sum(ks.map(x => x.cw[i]))); n.pw = hp ? SI.map(i => sum(ks.map(x => x.pw ? x.pw[i] : 0))) : null; n.co = sum(ks.map(x => x.co)); n.po = hp ? sum(ks.map(x => x.po || 0)) : null; return n; };
+    const leaves = n => n.kids ? n.kids.flatMap(leaves) : [n];
+    const chans = group(D.sources, 'channel').map(([ch, rs]) => {
+      if (rs.length === 1 && !rs[0].country && !rs[0].source) return Object.assign(leaf(rs[0], ch), { id: ch });
+      const kids = rs.some(r => r.country) ? group(rs, 'country').map(([c, cr]) => cr.length === 1 && !cr[0].source ? leaf(cr[0], c) : { name: c, kids: cr.map(r => leaf(r, r.source)) }) : rs.map(r => leaf(r, r.source));
+      const n = agg({ id: ch, name: ch, kids }); n.mixed = new Set(leaves(n).map(l => l.t).filter(Boolean)).size > 1; return n; });
+    const tw = SI.map(i => sum(chans.map(c => c.cw[i]))), tp = SI.map(i => sum(chans.map(c => c.pw ? c.pw[i] : 0))), tc = sum(tw), tpv = sum(tp), td = delta(tc, tpv);
+
+    // ---- зведення за типом продажів
+    const lv = chans.flatMap(leaves), tot = x => [sum(x.map(l => sum(l.cw))), sum(x.map(l => l.pw ? sum(l.pw) : 0))];
+    const blank = { val: false, nd: false }, ND = { val: false, nd: true };
+    const mRow = (name, f, strong, split) => { const x = lv.filter(f), t = tot(x), d = delta(t[0], t[1]), has = t[0] || t[1], known = x.filter(l => l.p != null);
+      const c = (v, share, big) => ({ val: true, nd: false, text: money(v), share, size: big ? '16px' : '14px', weight: big ? 700 : (strong ? 700 : 500), fg: '#1f2233' });
+      const part = pv => !split || !has ? blank : !known.length ? ND : c(tot(x.filter(l => l.p === pv))[0], pct(tot(x.filter(l => l.p === pv))[0], tc));
+      return { name, weight: strong ? 700 : 500, bg: strong ? '#fafbfd' : '#fff', cells: [part(true), part(false), has ? c(t[0], strong ? '' : pct(t[0], tc), true) : ND, has ? Object.assign(c(t[1], ''), { weight: 400, fg: '#4a4e60' }) : blank], delta: d.label, deltaBg: d.bg, deltaFg: d.fg }; };
+    const mRows = [mRow('Брендові', l => l.t === 'brand', false, true), mRow('На попиті', l => l.t === 'demand', false, true), mRow('Lumpurini Family', l => l.t === 'family', false, false), mRow('Не визначено', l => !l.t, false, false), mRow('Разом', () => true, true, true)];
+
+    // ---- таблиця: за каналами або за типом
+    const pick = (n, f) => { if (!n.kids) return f(n) ? n : null; const ks = n.kids.map(x => pick(x, f)).filter(Boolean); return ks.length ? Object.assign({}, n, { kids: ks }) : null; };
+    const typeGroup = (id, name, suffix, f) => { const kids = chans.map(c => { const n = pick(c, f); if (!n) return null; const x = Object.assign({}, n, { mixed: false });
+      if (x.kids && x.kids.length === 1 && !x.kids[0].kids) return Object.assign({}, x.kids[0], { name: c.name + ' · ' + x.kids[0].name });
+      if (c.mixed) x.name = c.name + ': ' + suffix; return x; }).filter(Boolean); return kids.length ? agg({ id, name, kids, isGroup: true }) : null; };
+    const tree = view === 'chan' ? chans : [typeGroup('brand', 'Брендові продажі', 'брендові джерела', l => l.t === 'brand'), typeGroup('demand', 'Продажі на попиті', 'джерела на попиті', l => l.t === 'demand'),
+      typeGroup('family', 'Lumpurini Family', 'Family', l => l.t === 'family'), typeGroup('undef', 'Не визначено', 'не визначено', l => !l.t)].filter(Boolean);
+    const tLabel = { brand: 'брендові', demand: 'на попиті' };
+    const rows = [];
+    const walk = (n, depth, id, parent, mixed) => {
+      const c = sum(n.cw), p = n.pw ? sum(n.pw) : null; if (!c && !p) return;
+      const d = delta(c, p), open = !!this.state.open[id], zero = c === 0 && p > 0, mx = Math.max(1, ...n.cw, ...(n.pw || [0]));
+      const shareOf = t => pct(sum(leaves(n).filter(l => l.t === t).map(l => sum(l.cw))), c);
+      rows.push({
+        name: n.name, indent: depth * 22 + 'px', padY: compact ? '7px' : (depth === 0 ? '14px' : '10px'),
+        bg: zero ? 'oklch(0.97 0.02 25)' : depth === 0 ? '#fff' : '#fafbfd', cursor: n.kids ? 'pointer' : 'default',
+        fontSize: depth >= 2 ? '13px' : '14px', weight: depth === 0 ? 600 : 400, nameColor: depth >= 2 ? '#4a4e60' : '#1f2233',
+        chevRot: open ? 'rotate(90deg)' : 'none', chevOpacity: n.kids ? 1 : 0,
+        toggle: n.kids ? () => this.setState(s => ({ open: Object.assign({}, s.open, { [id]: !s.open[id] }) })) : undefined,
+        tag: n.kids ? '' : n.p === true ? 'платно' : n.p === false ? 'безплатно' : '', tagBg: n.p === true ? '#1f2233' : '#fff', tagFg: n.p === true ? '#fff' : '#4a4e60', tagBorder: n.p === true ? '1px solid #1f2233' : '1px solid #c5c8d6',
+        tag2: mixed && !n.kids && tLabel[n.t] ? tLabel[n.t] : '',
+        share: !n.kids && n.undef && c ? dec(c / (parent && !parent.isGroup ? parent.c : tc) * 100, 1) + (parent && !parent.isGroup ? '% продажів каналу «' + parent.name + '»' : '% усіх продажів')
+          : n.isGroup && n.id === 'undef' ? dec(c / (tc || 1) * 100, 1) + '% усіх продажів'
+          : n.mixed && c ? 'брендові ' + shareOf('brand') + ' · на попиті ' + shareOf('demand') + ' · Family ' + shareOf('family') : '',
+        cur: money(c), isZero: zero, notZero: !zero, prev: p == null ? '' : money(p), hasPrev: p != null, noPrev: p == null,
+        orders: n.co, prevOrders: n.po == null ? '' : '· було ' + n.po,
+        delta: d.label, deltaBg: zero ? RED : d.bg, deltaFg: zero ? '#fff' : d.fg,
+        weeks: n.cw.map((v, i) => { const pv = n.pw ? n.pw[i] : null; return {
+          curH: (v === 0 ? (pv > 0 ? 3 : 1) : Math.max(3, v / mx * 26)) + 'px', curBg: v === 0 ? (pv > 0 ? RED : '#d5d8e3') : A,
+          prevH: (pv ? Math.max(3, pv / mx * 26) : 0) + 'px', prevBorder: pv ? '1.5px solid ' + AL : '0',
+          title: segs[i].long + ': ' + money(v) + ' · ' + MG[pt.m - 1].replace(/а$|я$/, m => m) + ': ' + (pv == null ? 'немає даних' : money(pv)) }; })
+      });
+      if (n.kids && open) n.kids.forEach((x, i) => walk(x, depth + 1, id + '/' + i, { c, name: n.name, isGroup: n.isGroup }, n.mixed));
+    };
+    tree.forEach(c => walk(c, 0, c.id, null));
+
+    // ---- верхня картка
+    const bmx = Math.max(1, ...tw, ...tp);
+    const bWeeks = tw.map((v, i) => { const d = delta(v, tp[i]); return { label: segs[i].label, note: segs[i].note, cur: money(v), prev: money(tp[i]), curH: Math.max(2, v / bmx * 120) + 'px', prevH: Math.max(2, tp[i] / bmx * 120) + 'px', delta: d.label, deltaBg: d.bg, deltaFg: d.fg }; });
+    const shown = chans.filter(c => sum(c.cw) || (c.pw && sum(c.pw))), cmx = Math.max(1, ...shown.map(c => Math.max(sum(c.cw), c.pw ? sum(c.pw) : 0)));
+    const cRows = shown.map(c => { const v = sum(c.cw), p = c.pw ? sum(c.pw) : 0, d = delta(v, p), z = v === 0 && p > 0; return { name: c.name, cur: money(v), prev: money(p), curW: v / cmx * 72 + '%', prevW: p / cmx * 72 + '%', curBg: z ? RED : A, delta: d.label, deltaBg: z ? RED : d.bg, deltaFg: z ? '#fff' : d.fg }; });
+
+    // ---- Товари і Ціни
+    const sk = this.state.sortKey, sd = this.state.sortDir, order = chans.map(c => c.name), chN = [];
+    D.products.forEach(p => p.channels.forEach(c => { if (!chN.includes(c.channel)) chN.push(c.channel); }));
+    chN.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
+    let pr = D.products.map(p => { const cs = chN.map(n => p.channels.find(c => c.channel === n)), u = cs.map(c => c ? c.current.units : 0), pu = cs.map(c => c && c.previous ? c.previous.units : 0);
+      const a = sum(cs.map(c => c ? c.current.net[k] : 0)), pa = sum(cs.map(c => c && c.previous ? c.previous.net[k] : 0));
+      return { name: p.name, code: p.sku, cs, u, pu, units: sum(u), prevUnits: sum(pu), a, pa, d: pa ? (a - pa) / pa : -9 }; }).filter(p => p.units || p.prevUnits);
+    const key = p => sk === 'name' ? p.name : sk === 'units' ? p.units : sk === 'sum' ? p.a : sk === 'prev' ? p.pa : sk === 'delta' ? p.d : p.u[+sk.slice(1)];
+    pr.sort((x, y) => { const a = key(x), b = key(y); return (typeof a === 'string' ? a.localeCompare(b, 'uk') : a - b) * sd; });
+    const pCols = [['name','Товар','left',''],['units','Штук','right','· було'],['sum','Продажі','right','без ПДВ']].concat(chN.map((n, j) => ['c' + j, n, 'right', 'шт'])).concat([['prev', MN[pt.m - 1], 'right', 'без ПДВ'],['delta','Зміна','right','']])
+      .map(([kk, label, align, sub]) => ({ label, align, sub, fg: sk === kk ? '#1f2233' : '#6b6f80', weight: sk === kk ? 600 : 400, arrow: sk === kk ? (sd < 0 ? '▼' : '▲') : '',
+        sort: () => this.setState(s => ({ sortKey: kk, sortDir: s.sortKey === kk ? -s.sortDir : (kk === 'name' ? 1 : -1) })) }));
+    const pRows = pr.map(p => { const z = p.units === 0 && p.prevUnits > 0, d = delta(p.a, p.pa); return { name: p.name, code: p.code, units: p.units, prevUnits: p.prevUnits, sum: money(p.a), prev: money(p.pa), isZero: z, notZero: !z,
+      bg: z ? 'oklch(0.97 0.02 25)' : '#fff', delta: d.label, deltaBg: z ? RED : d.bg, deltaFg: z ? '#fff' : d.fg,
+      ch: p.u.map((v, j) => ({ text: v ? v : (p.pu[j] ? '0' : '·'), fg: v ? '#1f2233' : (p.pu[j] ? RED : '#c5c8d6'), weight: !v && p.pu[j] ? 700 : 400, title: MN[pt.m - 1] + ': ' + p.pu[j] + ' шт' })) }; });
+    const pta = sum(pr.map(p => p.a)), ptp = sum(pr.map(p => p.pa)), ptd = delta(pta, ptp);
+    const pTotal = { units: sum(pr.map(p => p.units)), prevUnits: sum(pr.map(p => p.prevUnits)), sum: money(pta), prev: money(ptp), ch: chN.map((n, j) => sum(pr.map(p => p.u[j]))), delta: ptd.label, deltaBg: ptd.bg, deltaFg: ptd.fg };
+    const prRows = pr.slice().sort((x, y) => y.a - x.a).map(p => ({ name: p.name, code: p.code, ch: p.cs.map(c => c && c.current.units && c.current.price ? { price: money(c.current.price[k]), pace: dec(c.current.units / ct.d * 7, 1) + ' шт/тижд.' } : { price: '', pace: 'немає продажів' }) }));
+
+    // ---- Реклама
+    const AD = D.ads, share = (sp, sl) => sl ? dec(sp / sl * 100, 1) + '%' : '', WI = AD.weeks.map((_, i) => i);
+    const wl = AD.weeks.map(w => { const a = pd(w.from), b = pd(w.to); return a.m === b.m ? a.d + '–' + b.d + ' ' + MG[b.m - 1] : a.d + ' ' + MG[a.m - 1].slice(0, 4) + '. – ' + b.d + ' ' + MG[b.m - 1].slice(0, 4) + '.'; });
+    const awS = WI.map(i => sum(AD.rows.map(a => a.weeks[i].spend[k]))), awL = WI.map(i => sum(AD.rows.map(a => a.weeks[i].sales[k]))), amx = Math.max(1, ...awL, ...awS);
+    const adWeeks = wl.map((label, i) => ({ label, note: AD.weeks[i].complete ? '' : 'неповний', op: AD.weeks[i].complete ? 1 : 0.45, sales: money(awL[i]), spend: money(awS[i]), salesH: awL[i] / amx * 180 + 'px', spendH: awS[i] / amx * 180 + 'px' }));
+    const adRows = AD.rows.map(a => { const sl = a.weeks.map(w => w.sales[k]), sp = a.weeks.map(w => w.spend[k]), mx = Math.max(1, ...sl, ...sp); return { name: a.name, spend: money(sum(sp)), sales: money(sum(sl)), share: share(sum(sp), sum(sl)), orders: sum(a.weeks.map(w => w.orders)),
+      weeks: sl.map((v, i) => ({ op: AD.weeks[i].complete ? 1 : 0.45, salesH: (v ? Math.max(2, v / mx * 26) : 1) + 'px', spendH: (sp[i] ? Math.max(2, sp[i] / mx * 26) : 1) + 'px', title: wl[i] + (AD.weeks[i].complete ? '' : ' (неповний)') + ': продажі ' + money(v) + ' · витрати ' + money(sp[i]) })) }; });
+    const adTotal = { spend: money(sum(awS)), sales: money(sum(awL)), share: share(sum(awS), sum(awL)), orders: sum(AD.rows.map(a => sum(a.weeks.map(w => w.orders)))) };
+    const af = pd(AD.weeks[0].from), at = pd(AD.weeks[AD.weeks.length - 1].to), afile = AD.fileDate ? pd(AD.fileDate) : null;
+
+    const btn = (on, label, pick) => ({ label, pick, bg: on ? '#fff' : 'transparent', fg: on ? '#1f2233' : '#6b6f80', shadow: on ? '0 1px 2px rgba(31,34,51,.12)' : 'none' });
+    return {
+      tabs: [['sources','Джерела'],['products','Товари'],['prices','Ціни'],['ads','Реклама'],['profit','Прибуток'],['help','Інструкція']].map(([kk, label]) => ({ label, note: kk === 'profit', weight: tab === kk ? 600 : 400, fg: tab === kk ? A : '#6b6f80', line: tab === kk ? A : 'transparent', pick: () => this.setState({ tab: kk }) })),
+      tabSources: tab === 'sources', tabProducts: tab === 'products', tabPrices: tab === 'prices', tabAds: tab === 'ads', tabProfit: tab === 'profit', tabHelp: tab === 'help', padY: compact ? '7px' : '11px',
+      periodCur: range(cf, ct), periodPrev: range(pf, pt), curMonth: MN[ct.m - 1], prevMonth: MN[pt.m - 1],
+      updatedText: 'Дані по ' + ct.d + ' ' + MG[ct.m - 1] + ' включно · оновлено ' + fullDate(up) + ', ' + up.t,
+      segLabels: segs.map(s => s.label), segNote: lastSeg.complete ? '' : segs[segs.length - 1].label + ': відрізок неповний, ' + lastSeg.days + ' ' + dn(lastSeg.days) + ' проти тих самих днів минулого місяця',
+      noSales: (D.meta.channelsWithoutSales || []).join(', '),
+      pCols, pRows, pTotal, pGrid: 'minmax(270px,1fr) 84px 110px repeat(' + chN.length + ',68px) 110px 84px', pMinW: 700 + chN.length * 80 + 'px',
+      prCols: chN, prRows, prGrid: 'minmax(270px,1fr) repeat(' + chN.length + ',minmax(120px,1fr))', prMinW: 340 + chN.length * 136 + 'px',
+      adWeeks, adRows, adTotal, adPeriod: af.d + ' ' + MG[af.m - 1] + ' – ' + at.d + ' ' + MG[at.m - 1], adFile: afile ? 'Файл Allegro Ads: ' + fullDate(afile) : 'Витрати на рекламу ще не завантажені',
+      rows, mRows, views: [['chan','За каналами'],['type','За типом продажів']].map(([kk, l]) => btn(view === kk, l, () => this.setState({ view: kk }))),
+      currencies: [['PLN','zł'],['EUR','€']].map(([kk, l]) => btn(cur === kk, l, () => this.setState({ cur: kk }))),
+      total: { cur: money(tc), prev: money(tpv), delta: td.label, deltaBg: td.bg, deltaFg: td.fg, orders: sum(chans.map(c => c.co)), prevOrders: sum(chans.map(c => c.po || 0)) },
+      b: { weeks: bWeeks }, c: { rows: cRows }
+    };
+  }
+}
+</script>
+</body>
+</html>
